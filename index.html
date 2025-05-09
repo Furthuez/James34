@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James Project #34</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #111;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: colorChange 5s infinite;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .birthday-message {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeIn 2s 1s forwards;
+        }
+        
+        .youtube-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff0000, #ff4500);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+        
+        .youtube-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.6);
+        }
+        
+        .youtube-button:before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+        }
+        
+        .cake {
+            margin-top: 40px;
+            font-size: 5rem;
+            animation: bounce 2s infinite;
+        }
+        
+        .balloon-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .balloon {
+            position: absolute;
+            font-size: 2rem;
+            animation: float linear infinite;
+        }
+        
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .audio-controls:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        
+        @keyframes colorChange {
+            0% { color: #ff0000; }
+            20% { color: #ffff00; }
+            40% { color: #00ff00; }
+            60% { color: #00ffff; }
+            80% { color: #ff00ff; }
+            100% { color: #ff0000; }
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0); }
+            100% { transform: translateY(-100vh) rotate(20deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="balloon-container" id="balloonContainer"></div>
+    <div class="container">
+        <h1 id="birthdayHeading">HBD FERDOS MY NIGGA</h1>
+        <div class="birthday-message">
+            Semoga diberikan kesehatan dan kanjud spek africano🥵<br>
+            Semoga tiap tahun nya kamuh tambah siqma🥶😈<br>
+            #STMKAPALKARAM48BLUKUTUK😋
+            
+            Sorry telat, banyak error aokwoakwk :v
+            -James
+        </div>
+        <a href="https://youtu.be/xvFZjo5PgG0?si=yS3Y898A3Y4szvHk" class="youtube-button" target="_blank">
+            KIRIMI AKU PESAN ✌️😁
+        </a>
+        <div class="cake">🎂</div>
+    </div>
+    
+    <!-- YouTube iframe for music (hidden) -->
+    <div style="position: absolute; opacity: 0; pointer-events: none;">
+        <div id="ytPlayer"></div>
+    </div>
+    
+    <!-- Audio control button -->
+    <div class="audio-controls" id="audioControl">🔈</div>
+
+    <!-- YouTube API -->
+    <script src="https://youtu.be/PlXzQoRGiec?si=4p4Nam6be-KU5tNj"></script>
+    
+    <script>
+        // YouTube player variables
+        let player;
+        let audioPlaying = false;
+        const audioControl = document.getElementById('audioControl');
+        
+        // Initialize YouTube player when API is ready
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytPlayer', {
+                height: '0',
+                width: '0',
+                videoId: 'xvFZjo5PgG0', // Rick Astley - Never Gonna Give You Up
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'disablekb': 1,
+                    'enablejsapi': 1,
+                    'loop': 1,
+                    'playlist': 'xvFZjo5PgG0', // Sama dengan videoId untuk loop
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        
+        // When player is ready
+        function onPlayerReady(event) {
+            // Player is ready
+            console.log("YouTube player is ready");
+        }
+        
+        // When player state changes
+        function onPlayerStateChange(event) {
+            // Update button when video ends
+            if (event.data == YT.PlayerState.ENDED) {
+                audioPlaying = false;
+                audioControl.textContent = '🔈';
+            }
+        }
+        
+        // Function to toggle music
+        function toggleMusic() {
+            if (audioPlaying) {
+                player.pauseVideo();
+                audioControl.textContent = '🔈';
+            } else {
+                player.playVideo();
+                audioControl.textContent = '🔊';
+            }
+            audioPlaying = !audioPlaying;
+        }
+        
+        // Add click event to audio control
+        audioControl.addEventListener('click', toggleMusic);
+        
+        // Generate confetti
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            
+            // Random size
+            const size = Math.random() * 10 + 5;
+            confetti.style.width = `${size}px`;
+            confetti.style.height = `${size}px`;
+            
+            // Random position
+            confetti.style.left = `${Math.random() * 100}vw`;
+            
+            // Random color
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Random rotation speed
+            const duration = Math.random() * 3 + 2;
+            confetti.style.animation = `fall ${duration}s linear forwards`;
+            
+            document.body.appendChild(confetti);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                confetti.remove();
+            }, duration * 1000);
+        }
+        
+        // Generate balloons
+        function createBalloon() {
+            const balloonContainer = document.getElementById('balloonContainer');
+            const balloon = document.createElement('div');
+            balloon.classList.add('balloon');
+            
+            // Random balloon emoji
+            const balloons = ['🎈', '🎈', '🎈', '🎯', '✨', '🎊', '🎉'];
+            balloon.textContent = balloons[Math.floor(Math.random() * balloons.length)];
+            
+            // Random position
+            balloon.style.left = `${Math.random() * 100}vw`;
+            balloon.style.bottom = `-50px`;
+            
+            // Random size
+            const scale = Math.random() * 1 + 0.5;
+            balloon.style.transform = `scale(${scale})`;
+            
+            // Random animation duration
+            const duration = Math.random() * 10 + 10;
+            balloon.style.animation = `float ${duration}s linear infinite`;
+            
+            balloonContainer.appendChild(balloon);
+        }
+        
+        // Make the heading letters jump
+        function setupJumpingLetters() {
+            const heading = document.getElementById('birthdayHeading');
+            const text = heading.textContent;
+            let newHTML = '';
+            
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === ' ') {
+                    newHTML += ' ';
+                } else {
+                    const delay = Math.random() * 2;
+                    newHTML += `<span style="display:inline-block; animation: bounce 1s ${delay}s infinite;">${text[i]}</span>`;
+                }
+            }
+            
+            heading.innerHTML = newHTML;
+        }
+        
+        // Start animations and attempt to play music
+        window.onload = function() {
+            setupJumpingLetters();
+            
+            // Create confetti at intervals
+            setInterval(createConfetti, 200);
+            
+            // Create balloons at intervals
+            setInterval(createBalloon, 1000);
+            
+            // Show notification about music
+            setTimeout(() => {
+                alert("Klik tombol 🔊 di pojok kanan bawah untuk mendengarkan musik!");
+            }, 1500);
+        };
+    </script>
+</body>
+</html>
